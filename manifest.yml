@@ -1,24 +1,38 @@
 modules:
   macro:
-    - key: remote-server-side-rendering-macro
-      resource: main
+    - key: forge-server-side-rendering-macro
+      resource: spa
       resolver:
         function: ssr-resolver
+      title: Forge Server Side Rendering Demo
+      description: Demonstrates the ability to fetch HTML from a remote server and render it in Confluence.
+    - key: remote-server-side-rendering-macro
+      resource: spa
+      resolver:
+        endpoint: remote-ssr-endpoint
         # This you can replace with a Forge remote
         # https://developer.atlassian.com/platform/forge/remote/calling-from-frontend/
-      title: Remote Server Sider Rendering Demo
+      title: Remote Server Side Rendering Demo
       description: Demonstrates the ability to fetch HTML from a remote server and render it in Confluence.
   function:
     - key: ssr-resolver
       handler: index.handler
+  endpoint:
+    - key: remote-ssr-endpoint
+      remote: dx-ssr
+      auth:
+        appUserToken:
+          enabled: false
+        appSystemToken:
+          enabled: false
 resources:
-  - key: main
+  - key: spa
     path: static/spa/build
     tunnel:
       port: 3000
 remotes:
-  - key: connect
-    baseUrl: https://dx-server-side-rendering.glitch.me/
+  - key: dx-ssr
+    baseUrl: https://dx-server-side-rendering.glitch.me
 connectModules:
   confluence:lifecycle:
     - key: lifecycle-events
@@ -51,7 +65,7 @@ app:
   id: ari:cloud:ecosystem::app/e9184c67-9a57-4880-aa5c-a2016bdcb0cf
   connect:
     key: dx-server-side-rendering
-    remote: connect
+    remote: dx-ssr
     authentication: jwt
   runtime:
     name: nodejs20.x
@@ -59,6 +73,9 @@ app:
     enabled: false
 permissions:
   scopes:
+    - read:app-user-token
+    - read:app-system-token
+    - read:confluence-content.summary
     - read:connect-confluence
     - write:connect-confluence
     - admin:connect-confluence
