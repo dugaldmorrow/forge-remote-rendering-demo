@@ -1,0 +1,70 @@
+modules:
+  macro:
+    - key: remote-server-side-rendering-macro
+      resource: main
+      resolver:
+        function: ssr-resolver
+        # This you can replace with a Forge remote
+        # https://developer.atlassian.com/platform/forge/remote/calling-from-frontend/
+      title: Remote Server Sider Rendering Demo
+      description: Demonstrates the ability to fetch HTML from a remote server and render it in Confluence.
+  function:
+    - key: ssr-resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: static/spa/build
+    tunnel:
+      port: 3000
+remotes:
+  - key: connect
+    baseUrl: https://dx-server-side-rendering.glitch.me/
+connectModules:
+  confluence:lifecycle:
+    - key: lifecycle-events
+      installed: /installed
+      enabled: /enabled
+      uninstalled: /uninstalled
+      disabled: /disabled
+  confluence:generalPages:
+    - key: dx-ssr-general-page
+      url: /panel.html
+      location: system.header/left
+      name:
+        value: DX Server Side Rendering
+  confluence:webPanels:
+    - key: issue-panel
+      url: /panel.html
+      location: atl.jira.view.issue.left.context
+      name:
+        value: DX Server Side Rendering
+      weight: 50
+  confluence:dialogs:
+    - key: dx-dialog-module-key
+      cacheable: true
+      url: /panel.html?in-dialog=yes
+      options:
+        size: large
+        header:
+          value: DX Server Side Rendering
+app:
+  id: ari:cloud:ecosystem::app/e9184c67-9a57-4880-aa5c-a2016bdcb0cf
+  connect:
+    key: dx-server-side-rendering
+    remote: connect
+    authentication: jwt
+  runtime:
+    name: nodejs20.x
+  licensing:
+    enabled: false
+permissions:
+  scopes:
+    - read:connect-confluence
+    - write:connect-confluence
+    - admin:connect-confluence
+    - act-as-user:connect-confluence
+  content:
+    styles:
+      - unsafe-inline
+    scripts:
+      - unsafe-inline
